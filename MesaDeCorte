@@ -16,7 +16,8 @@
 
 int noar, preview, ultimo = 0;
 
-void vermelho(int ledg, int ledv){
+void vermelho(int ledg, int ledv)
+{
   digitalWrite(ledv, 1);
   digitalWrite(ledg, 0);
 }
@@ -69,7 +70,8 @@ void loop()
   if (digitalRead(bt06) == LOW)
     noar = 3;
   
-  switch (preview){
+  switch (preview)
+  {
     case 1: 
     	verde(led01g, led01v);
     	if (noar != 2)
@@ -93,7 +95,8 @@ void loop()
     	break;
   }
   
-  switch (noar){
+  switch (noar)
+  {
     case 1: 
     	vermelho(led01g, led01v);
     	if (preview != 2)
