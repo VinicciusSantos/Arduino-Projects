@@ -1,4 +1,4 @@
-// Link do tinkerkad: https://www.tinkercad.com/things/2AneXGtOJ3F-tremendous-robo
+// Link do tinkercad: https://www.tinkercad.com/things/2AneXGtOJ3F
 
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
