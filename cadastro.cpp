@@ -17,8 +17,8 @@ int data_evento[3];
 
 // Definindo os pinos digitais que serão usados:
 int bt_voltar = 7;
-int bt_mais = 8;
-int bt_menos = 9;
+int bt_menos = 8;
+int bt_mais = 9;
 int bt_enter = 10;
 
 void setup() // Tela de Boot
@@ -205,7 +205,7 @@ int validaIdade(int idade) // valida se for 18+
     }
 }
 
-char cadastraParticipante(char nomes[100][7])
+void cadastraParticipante(char nomes[100][7])
 {
   	delay(250);
   	lcd.clear();
@@ -278,7 +278,9 @@ char cadastraParticipante(char nomes[100][7])
                 	nomes[participantes][i] = nome[i]; 
                 }
               	participantes++;
-              	break;
+              	lcd.clear();
+              	delay(100);
+              	return;
             }
         }
           
@@ -305,7 +307,16 @@ void listarParticipantes()
  	while (1) // Listando os participantes
     {
       	delay(350);
-      	lcd.clear();    
+      	lcd.clear();
+      
+      	// Se não tiver nenhum dado na matriz
+      	if (participantes == 0)
+        {
+          	lcd.print("Sem Cadastros!");
+          	delay(1500);
+          	return;
+        }
+      
       	lcd.setCursor(0, 0);
       	int bmais = digitalRead(bt_mais);
       	int bmenos = digitalRead(bt_menos);
@@ -343,4 +354,3 @@ void loop()
       	case 3: listarParticipantes(); break;
     }
 }
- 
