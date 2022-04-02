@@ -1,7 +1,7 @@
 #include <LiquidCrystal.h>
+#include <string.h>
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
-# define MAX = 100
 int mostrando = 0;
 int listar = 0;
 int participantes = 0;
@@ -10,16 +10,18 @@ char alpha[] = "abcdefghijklmnopqrstuvwxyz";
 char nomes[100][7];
 char nome[] = "aaaaaa";
 
-int dia_hoje = 31;
-int mes_hoje = 03;
+char menu[4][10] = {"Evento", "Novo Part", "Listar", "Buscar"};
+
+int dia_hoje = 02;
+int mes_hoje = 04;
 int ano_hoje = 2022;
 int data_evento[3];
 
 // Definindo os pinos digitais que serão usados:
+int bt_mais = 6;
 int bt_voltar = 7;
 int bt_menos = 8;
-int bt_mais = 9;
-int bt_enter = 10;
+int bt_enter = 9;
 
 void setup() // Tela de Boot
 {  
@@ -35,39 +37,75 @@ void setup() // Tela de Boot
   	for (int i = 0; i < 3; i++)
   	{
   		lcd.print(".");
-    	delay(500);
+    	delay(300);
   	}
   	delay(200);
   	lcd.clear();
 }
 
+// Função para ficar mais fácil de alterar quando mudar para teclado USB
+int lerBotao(int botao) 
+{
+  	return digitalRead(botao);
+} 
+
 int mostrarMenu()
 {
 	while (1) // Mostrando o MENU
  	{
-   		delay(160);
+   		delay(200);
    		lcd.clear();
-   		lcd.setCursor(0,0);
+      	lcd.setCursor(0,0);
 
       	// Lendo os Inputs dos botões
-   		int bmais = digitalRead(bt_mais);
-  	 	int bmenos = digitalRead(bt_menos);
-  		int benter = digitalRead(bt_enter);
-
+   		int bmais = lerBotao(bt_mais);
+  	 	int bmenos = lerBotao(bt_menos);
+  		int benter = lerBotao(bt_enter);
+      
    		if (bmais == 1 && mostrando != 0) mostrando--;
-   		if (bmenos == 1 && mostrando != 2) mostrando++;
+   		if (bmenos == 1 && mostrando != 3) mostrando++;
    		if (benter == 1)
    		{
      		if (mostrando == 0) return 1;       // Cadastrar eventos
      		else if (mostrando == 1) return 2;  // Cadastrar participantes
        		else if (mostrando == 2) return 3;  // Listar participantes
    		}
-
+		
+      	// Imprimindo o Menu
+      	for (int i = mostrando; i <= mostrando+1; i++)
+        {
+          	// Se Caso o próximo indice não exista, encerre
+          	if (i >= sizeof(menu)/10) break;
+          	
+          	if (mostrando == 0) // Imprimindo o cabeçalho do menu
+            {
+      			lcd.print("  -=- MENU -=-");
+      			lcd.setCursor(0,1); 
+            }
+          
+          	// Mostrando os < > quando elemento selecionado e imprimindo o numero do menu
+          	if (mostrando == i) lcd.print("<"); else lcd.print(" ");
+          	lcd.print(i+1);
+          	if (mostrando == i) lcd.print("> - "); else lcd.print("  - ");
+                   	
+          	// Imprimindo a opção do menu (Ex: Listar, Novo Part...)
+          	for (int j = 0; j < strlen(menu[i]); j++)
+            {
+             	lcd.print(menu[i][j]); 
+            }
+          
+          	// Se mostrando for 0, ele só vai imprimir uma opção, por causa do cabeçalho
+          	if(mostrando == 0) break;
+          	lcd.setCursor(0,1);
+        }
+      
+      	/*
    		if (mostrando == 0) // Primeira Tela
    		{
    		  	lcd.print("  -=- MENU -=-");
   			lcd.setCursor(0,1);
-   		  	lcd.print("<1> - Evento");
+   		  	lcd.print("<1> - ");
+          	lcd.print(menu[0]);
    		}
 
    		else if (mostrando == 1) // Segunda tela
@@ -83,6 +121,7 @@ int mostrarMenu()
      		lcd.setCursor(0,1);
      		lcd.print("<3> - Listar");
       	}
+        */
     } 
 }
 
@@ -95,17 +134,17 @@ void recebeData(int dat[3]) // Recebe um vetor para fazer o retorno por parâmet
  
     while(1) // Recebendo a data do evento
     {
-        delay(250);
+        delay(200);
         lcd.clear();
         lcd.setCursor(0, 0);
   	    lcd.print("Dia do Evento:");
         lcd.setCursor(0, 1);
     
         // Lendo os Imputs dos botões
-        int bmais = digitalRead(bt_mais);
-        int bmenos = digitalRead(bt_menos);
-        int benter = digitalRead(bt_enter);
-        int bvoltar = digitalRead(bt_voltar);
+        int bmais = lerBotao(bt_mais);
+        int bmenos = lerBotao(bt_menos);
+        int benter = lerBotao(bt_enter);
+        int bvoltar = lerBotao(bt_voltar);
 
         // Configurando os botões de voltar e avançar
         if (bvoltar == 1 && editando != 1) editando--;
@@ -178,7 +217,7 @@ int validaData(int data[3])
   	lcd.clear();
   
   	// Verificando se o evento é em uma data posterior ou não
-  	if ((data[2] > ano_hoje) || (data[2] == ano_hoje && data[1] > mes_hoje))
+  	if ((data[2] > ano_hoje) || (data[2] == ano_hoje && data[1] > mes_hoje) || (data[2] == ano_hoje && data[1] == mes_hoje && data[0] > dia_hoje))
     {
    		lcd.print("CADASTRO FEITO!");
   		delay(1000);
@@ -218,9 +257,9 @@ void cadastraParticipante(char nomes[100][7])
       	lcd.print("Idade:");
 
       	// Recebendo os inputs
-      	int bmais = digitalRead(bt_mais);
-      	int bmenos = digitalRead(bt_menos);
-      	int benter = digitalRead(bt_enter);
+      	int bmais = lerBotao(bt_mais);
+      	int bmenos = lerBotao(bt_menos);
+      	int benter = lerBotao(bt_enter);
 
       	if (bmais == 1) idade++;
       	else if (bmenos == 1 && idade != 1) idade--;
@@ -243,10 +282,10 @@ void cadastraParticipante(char nomes[100][7])
       	lcd.print("Digite seu Nome:");
 
       	// Recebendo os inputs
-      	int bmais = digitalRead(bt_mais);
-      	int bmenos = digitalRead(bt_menos);
-      	int benter = digitalRead(bt_enter);
-      	int bvoltar = digitalRead(bt_voltar);
+      	int bmais = lerBotao(bt_mais);
+      	int bmenos = lerBotao(bt_menos);
+      	int benter = lerBotao(bt_enter);
+      	int bvoltar = lerBotao(bt_voltar);
 
       	// Configurando os botões
       	if (bmais == 1) escolha++;
@@ -318,10 +357,10 @@ void listarParticipantes()
         }
       
       	lcd.setCursor(0, 0);
-      	int bmais = digitalRead(bt_mais);
-      	int bmenos = digitalRead(bt_menos);
-      	int benter = digitalRead(bt_enter);
-      	int bvoltar = digitalRead(bt_voltar);
+      	int bmais = lerBotao(bt_mais);
+      	int bmenos = lerBotao(bt_menos);
+      	int benter = lerBotao(bt_enter);
+      	int bvoltar = lerBotao(bt_voltar);
 
       	if (bmenos == 1 && listar < participantes) listar+=2;
       	else if (bmais == 1 && listar != 0) listar-=2;
