@@ -384,7 +384,7 @@ void listarParticipantes()
 void loop() 
 {
   	lcd.clear();
-    int adm = mostrarMenu();
+    	int adm = mostrarMenu();
   
   	switch (adm)
     {
